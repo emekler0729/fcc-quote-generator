@@ -121,9 +121,12 @@ const Button = styled.a`
 
 const Footer = styled.footer`
     color: white;
-    position: relative;
-    left: 80px;
+    // position: relative;
+    // left: 80px;
+    margin-right: 10%;
+    margin-left: 160px;
     margin-bottom: 2rem;
+    text-align: right;
 
     a,
     a:visited {

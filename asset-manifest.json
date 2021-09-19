@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/fcc-quote-generator/static/css/main.4b131067.chunk.css",
-    "main.js": "/fcc-quote-generator/static/js/main.4f96e700.chunk.js",
-    "main.js.map": "/fcc-quote-generator/static/js/main.4f96e700.chunk.js.map",
+    "main.js": "/fcc-quote-generator/static/js/main.e1a3615a.chunk.js",
+    "main.js.map": "/fcc-quote-generator/static/js/main.e1a3615a.chunk.js.map",
     "runtime-main.js": "/fcc-quote-generator/static/js/runtime-main.d3b82d84.js",
     "runtime-main.js.map": "/fcc-quote-generator/static/js/runtime-main.d3b82d84.js.map",
     "static/js/2.1b3e73a5.chunk.js": "/fcc-quote-generator/static/js/2.1b3e73a5.chunk.js",
@@ -15,6 +15,6 @@
     "static/js/runtime-main.d3b82d84.js",
     "static/js/2.1b3e73a5.chunk.js",
     "static/css/main.4b131067.chunk.css",
-    "static/js/main.4f96e700.chunk.js"
+    "static/js/main.e1a3615a.chunk.js"
   ]
 }

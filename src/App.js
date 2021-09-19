@@ -1,18 +1,19 @@
 import { useState, useEffect } from "react";
-import styled from "styled-components";
-
-const darkBackground = "#b88bbf";
-const transitionTime = 500;
+import styled, { ThemeProvider } from "styled-components";
 
 const Container = styled.div`
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
 
-    height: 100vh;
+    min-height: 100vh;
 
-    background-color: #caa6cb;
+    background: ${(props) => props.theme.light};
+    transition: background ${(props) => props.theme.transition * 2}ms;
+    z-index: 1;
+    overflow: hidden;
 `;
 
 const QuoteBox = styled.div`
@@ -21,12 +22,50 @@ const QuoteBox = styled.div`
     width: 80%;
     min-width: 320px;
     max-width: 500px;
+    margin-top: 2rem;
     margin-bottom: 2rem;
     padding: 2rem;
     border: 4px solid white;
     box-sizing: border-box;
 
-    background: ${darkBackground};
+    background: ${(props) => props.theme.dark};
+    transition: background ${(props) => props.theme.transition * 2}ms;
+
+    &:before {
+        z-index: -1;
+        content: "";
+        height: 130%;
+        width: 150%;
+        border: 4px solid ${(props) => props.theme.dark};
+        background: ${(props) => props.theme.dark};
+        transition: background ${(props) => props.theme.transition * 2}ms,
+            border-color ${(props) => props.theme.transition * 2}ms;
+
+        position: absolute;
+        top: calc(-30% - 4px);
+        left: -4px;
+
+        transform: rotate(45deg);
+        transform-origin: bottom left;
+    }
+
+    &:after {
+        z-index: -1;
+        content: "";
+        height: 70%;
+        width: 150%;
+        border: 4px solid ${(props) => props.theme.dark};
+        background: ${(props) => props.theme.dark};
+        transition: background ${(props) => props.theme.transition * 2}ms,
+            border-color ${(props) => props.theme.transition * 2}ms;
+
+        position: absolute;
+        top: -4px;
+        left: calc(100% + 4px);
+
+        transform: rotate(45deg);
+        transform-origin: top left;
+    }
 `;
 
 const Quote = styled.div`
@@ -39,7 +78,7 @@ const Text = styled.p`
     color: white;
     text-align: center;
 
-    transition: opacity ${transitionTime}ms;
+    transition: opacity ${(props) => props.theme.transition}ms;
 
     opacity: ${(props) => (props.visible ? "100%" : "0%")};
 `;
@@ -65,11 +104,13 @@ const Button = styled.a`
     font-family: inherit;
     font-size: 16px;
     font-weight: bold;
-    color: ${darkBackground};
+
+    color: ${(props) => props.theme.dark};
+
     text-decoration: none;
     line-height: 1;
 
-    transition: background 500ms;
+    transition: background 500ms, color ${(props) => props.theme.transition * 2}ms;
 
     cursor: pointer;
 
@@ -80,6 +121,9 @@ const Button = styled.a`
 
 const Footer = styled.footer`
     color: white;
+    position: relative;
+    left: 80px;
+    margin-bottom: 2rem;
 
     a,
     a:visited {
@@ -96,17 +140,37 @@ const Footer = styled.footer`
 `;
 
 const App = () => {
-    const [{ quote, author }, setQuote] = useState({ quote: "", author: "" });
+    const [{ quote, author }, setQuote] = useState({ quote: "❝\n❝\n", author: "" });
     const [transitioning, setTransitioning] = useState(true);
+    const [color, setColor] = useState(270);
+
+    const transition = 600;
+    const makeTheme = (color, transition) => ({
+        light: `hsl(${color}, 26%, 72%)`,
+        dark: `hsl(${color}, 26%, 65%)`,
+        transition,
+    });
+
+    let theme = makeTheme(color, transition);
 
     async function updateQuote() {
         setTransitioning(true);
+
+        let nextColor;
+        do {
+            nextColor = Math.floor(Math.random() * (360 / 30)) * 30;
+        } while (nextColor === color);
+        setColor(nextColor);
+
+        theme = makeTheme(color, transition);
+
         const response = await fetch("https://api.quotable.io/random");
         const data = await response.json();
+
         setTimeout(() => {
             setQuote({ quote: data.content, author: data.author });
             setTransitioning(false);
-        }, transitionTime);
+        }, transition);
     }
 
     useEffect(() => {
@@ -114,35 +178,37 @@ const App = () => {
     }, []);
 
     return (
-        <Container>
-            <QuoteBox id="quote-box">
-                <Quote>
-                    <Text visible={!transitioning} length={quote.length} id="text">
-                        {quote}
-                    </Text>
-                    <Author visible={!transitioning} id="author">
-                        —{author}
-                    </Author>
-                </Quote>
-                <Controls>
-                    <Button
-                        id="tweet-quote"
-                        href={`https://www.twitter.com/intent/tweet?text=${`${quote} —${author}`}`}
-                    >
-                        <i className="bi bi-twitter"></i>
-                    </Button>
-                    <Button id="new-quote" as="button" onClick={updateQuote}>
-                        New Quote
-                    </Button>
-                </Controls>
-            </QuoteBox>
-            <Footer>
-                Designed and developed by{" "}
-                <a href="https://www.eduard-mekler.com" target="_blank" rel="noreferrer">
-                    Eduard Mekler
-                </a>
-            </Footer>
-        </Container>
+        <ThemeProvider theme={theme}>
+            <Container>
+                <QuoteBox id="quote-box">
+                    <Quote>
+                        <Text visible={!transitioning} length={quote.length} id="text">
+                            {quote}
+                        </Text>
+                        <Author visible={!transitioning} id="author">
+                            —{author}
+                        </Author>
+                    </Quote>
+                    <Controls>
+                        <Button
+                            id="tweet-quote"
+                            href={`https://www.twitter.com/intent/tweet?text=${`${quote} —${author}`}`}
+                        >
+                            <i className="bi bi-twitter"></i>
+                        </Button>
+                        <Button id="new-quote" as="button" onClick={updateQuote}>
+                            New Quote
+                        </Button>
+                    </Controls>
+                </QuoteBox>
+                <Footer>
+                    Designed and developed by{" "}
+                    <a href="https://www.eduard-mekler.com" target="_blank" rel="noreferrer">
+                        Eduard Mekler
+                    </a>
+                </Footer>
+            </Container>
+        </ThemeProvider>
     );
 };
 

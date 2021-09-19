@@ -35,7 +35,7 @@ const QuoteBox = styled.div`
         z-index: -1;
         content: "";
         height: 130%;
-        width: 150%;
+        width: 3000%;
         border: 4px solid ${(props) => props.theme.dark};
         background: ${(props) => props.theme.dark};
         transition: background ${(props) => props.theme.transition * 2}ms,
@@ -52,8 +52,8 @@ const QuoteBox = styled.div`
     &:after {
         z-index: -1;
         content: "";
-        height: 70%;
-        width: 150%;
+        height: 55%;
+        width: 3000%;
         border: 4px solid ${(props) => props.theme.dark};
         background: ${(props) => props.theme.dark};
         transition: background ${(props) => props.theme.transition * 2}ms,
@@ -74,7 +74,7 @@ const Quote = styled.div`
 `;
 
 const Text = styled.p`
-    font-size: ${(props) => (props.length > 220 ? "1.5rem" : "2rem")};
+    font-size: ${(props) => (props.length > 174 ? "1.4rem" : "2rem")};
     color: white;
     text-align: center;
 

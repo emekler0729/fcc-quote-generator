@@ -142,42 +142,47 @@ const Footer = styled.footer`
     }
 `;
 
+const makeTheme = (color, transition) => ({
+    color,
+    light: `hsl(${color}, 26%, 72%)`,
+    dark: `hsl(${color}, 26%, 65%)`,
+    transition,
+});
+
+const transition = 600;
+const initialColor = 270;
+
 const App = () => {
-    const [{ quote, author }, setQuote] = useState({ quote: "❝\n❝\n", author: "" });
+    const [{ text, author }, setQuote] = useState({ text: "❝\n❝\n", author: "" });
     const [transitioning, setTransitioning] = useState(true);
-    const [color, setColor] = useState(270);
+    const [theme, setTheme] = useState(makeTheme(initialColor, transition));
 
-    const transition = 600;
-    const makeTheme = (color, transition) => ({
-        light: `hsl(${color}, 26%, 72%)`,
-        dark: `hsl(${color}, 26%, 65%)`,
-        transition,
-    });
-
-    let theme = makeTheme(color, transition);
-
-    async function updateQuote() {
+    async function newQuote() {
         setTransitioning(true);
-
-        let nextColor;
-        do {
-            nextColor = Math.floor(Math.random() * (360 / 30)) * 30;
-        } while (nextColor === color);
-        setColor(nextColor);
-
-        theme = makeTheme(color, transition);
 
         const response = await fetch("https://api.quotable.io/random");
         const data = await response.json();
 
         setTimeout(() => {
-            setQuote({ quote: data.content, author: data.author });
+            setQuote({ text: data.content, author: data.author });
             setTransitioning(false);
         }, transition);
     }
 
+    function updateQuote() {
+        setTheme(() => {
+            let nextColor;
+            do {
+                nextColor = Math.floor(Math.random() * (360 / 30)) * 30;
+            } while (nextColor === theme.color);
+
+            return makeTheme(nextColor, transition);
+        });
+        newQuote();
+    }
+
     useEffect(() => {
-        updateQuote();
+        newQuote();
     }, []);
 
     return (
@@ -185,8 +190,8 @@ const App = () => {
             <Container>
                 <QuoteBox id="quote-box">
                     <Quote>
-                        <Text visible={!transitioning} length={quote.length} id="text">
-                            {quote}
+                        <Text visible={!transitioning} length={text.length} id="text">
+                            {text}
                         </Text>
                         <Author visible={!transitioning} id="author">
                             —{author}
@@ -195,11 +200,11 @@ const App = () => {
                     <Controls>
                         <Button
                             id="tweet-quote"
-                            href={`https://www.twitter.com/intent/tweet?text=${`${quote} —${author}`}`}
+                            href={`https://www.twitter.com/intent/tweet?text=${`${text} —${author}`}`}
                         >
                             <i className="bi bi-twitter"></i>
                         </Button>
-                        <Button id="new-quote" as="button" onClick={updateQuote}>
+                        <Button id="new-quote" as="button" onClick={updateQuote} disabled={transitioning}>
                             New Quote
                         </Button>
                     </Controls>
